@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Журнал трудоустройства</title>
+  <style>
+    body {
+      font-family: 'Helvetica', sans-serif;
+      background-color: #f8f8f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #333;
+    }
+
+    h2 {
+      color: #1d3557;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #457b9d;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1d3557;
+    }
+
+    table {
+      width: 80%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 16px;
+    }
+
+    th {
+      background-color: #457b9d;
+      color: white;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+      padding-top: 60px;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #1d3557;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    input {
+      width: calc(100% - 24px);
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    input[type="text"] {
+      height: 40px;
+    }
+
+    button.modal-btn {
+      background-color: #457b9d;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+    }
+
+    button.modal-btn:hover {
+      background-color: #1d3557;
+    }
+
+    input[type="search"] {
+      margin-right: 10px;
+      width: calc(100% - 100px);
+    }
+
+    .search-btn {
+      background-color: #e63946;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+    }
+
+    .search-btn:hover {
+      background-color: #b82028;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Журнал трудоустройства</h2>
+
+<button onclick="openModal()">Добавить участника</button>
+
+<!-- Модальное окно -->
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3>Добавить участника</h3>
+    <form id="addForm">
+      <label for="collegeName">Наименование колледжа:</label>
+      <input type="text" id="collegeName" required>
+      <label for="lastName">Фамилия:</label>
+      <input type="text" id="lastName" required>
+      <label for="firstName">Имя:</label>
+      <input type="text" id="firstName" required>
+      <label for="middleName">Отчество:</label>
+      <input type="text" id="middleName">
+      <label for="dob">Дата и год рождения:</label>
+      <input type="text" id="dob" placeholder="гггг-мм-дд" required>
+      <label for="gradYear">Год выпуска:</label>
+      <input type="text" id="gradYear" required>
+      <label for="status">Текущий статус выпустника:</label>
+      <input type="text" id="status" required>
+      <label for="contact">Контактные данные:</label>
+      <input type="text" id="contact" required>
+      <button type="button" class="modal-btn" onclick="addPerson()">Добавить человека</button>
+    </form>
+  </div>
+</div>
+
+<label for="search">Поиск:</label>
+<input type="search" id="search">
+<button class="search-btn" onclick="searchPerson()">Найти</button>
+
+<table id="dataTable">
+  <thead>
+    <tr>
+      <th>Наименование колледжа</th>
+      <th>Фамилия</th>
+      <th>Имя</th>
+      <th>Отчество</th>
+      <th>Дата и год рождения</th>
+      <th>Год выпуска</th>
+      <th>Текущий статус выпустника</th>
+      <th>Контактные данные</th>
+      <th>Удалить</th>
+    </tr>
+  </thead>
+  <tbody id="dataBody">
+    <!-- Таблица будет заполнена данными JavaScript -->
+  </tbody>
+</table>
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeDeleteModal()">&times;</span>
+    <h3>Подтвердите удаление</h3>
+    <p>Вы уверены, что хотите удалить этого участника?</p>
+    <button type="button" class="modal-btn" onclick="confirmDelete()">Удалить</button>
+  </div>
+</div>
+
+<script>
+  // Функция для получения данных из localStorage
+  function getDataFromLocalStorage() {
+    const storedData = localStorage.getItem('journalData');
+    return storedData ? JSON.parse(storedData) : [];
+  }
+
+  // Функция для сохранения данных в localStorage
+  function saveDataToLocalStorage() {
+    localStorage.setItem('journalData', JSON.stringify(data));
+  }
+
+  // Пример данных
+  let data = getDataFromLocalStorage();
+
+  // Функция для отображения данных в таблице
+  function displayData(dataToShow = data) {
+    const tableBody = document.getElementById('dataBody');
+    tableBody.innerHTML = '';
+
+    for (const person of dataToShow) {
+      const row = document.createElement('tr');
+
+      for (const key in person) {
+        const cell = document.createElement('td');
+        cell.textContent = person[key];
+        row.appendChild(cell);
+      }
+
+      const deleteCell = document.createElement('td');
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = 'Удалить';
+      deleteButton.addEventListener('click', () => deletePerson(data.indexOf(person)));
+      deleteCell.appendChild(deleteButton);
+      row.appendChild(deleteCell);
+
+      tableBody.appendChild(row);
+    }
+  }
+
+  // Функция для добавления нового человека
+  function addPerson() {
+    const form = document.getElementById('addForm');
+    const person = {
+      collegeName: form.elements['collegeName'].value,
+      lastName: form.elements['lastName'].value,
+      firstName: form.elements['firstName'].value,
+      middleName: form.elements['middleName'].value,
+      dob: form.elements['dob'].value,
+      gradYear: form.elements['gradYear'].value,
+      status: form.elements['status'].value,
+      contact: form.elements['contact'].value,
+    };
+
+    data.push(person);
+    saveDataToLocalStorage();
+    displayData();
+    form.reset();
+    closeModal();
+  }
+
+  // Функция для поиска человека
+  function searchPerson() {
+    const searchTerm = document.getElementById('search').value.toLowerCase();
+    const filteredData = data.filter(person =>
+      Object.values(person).some(value => value.toLowerCase().includes(searchTerm))
+    );
+    displayData(filteredData);
+  }
+
+  // Функция для удаления человека
+  function deletePerson(index) {
+    data.splice(index, 1);
+    saveDataToLocalStorage();
+    displayData();
+  }
+
+  // Функции для работы с модальным окном
+  function openModal() {
+    const modal = document.getElementById('myModal');
+    modal.style.display = 'block';
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('myModal');
+    modal.style.display = 'none';
+  }
+
+  // Закрытие модального окна при клике вне формы
+  window.onclick = function(event) {
+    const modal = document.getElementById('myModal');
+    if (event.target == modal) {
+      closeModal();
+    }
+  };
+
+  // Инициализация отображения данных при загрузке страницы
+  displayData();
+</script>
+<script>
+  let personToDeleteIndex; // Индекс участника, которого нужно удалить
+
+  function deletePerson(index) {
+    personToDeleteIndex = index;
+    const deleteModal = document.getElementById('deleteModal');
+    deleteModal.style.display = 'block';
+  }
+
+  function confirmDelete() {
+    data.splice(personToDeleteIndex, 1);
+    saveDataToLocalStorage();
+    displayData();
+    closeDeleteModal();
+  }
+
+  function closeDeleteModal() {
+    const deleteModal = document.getElementById('deleteModal');
+    deleteModal.style.display = 'none';
+  }
+</script>
+</body>
+</html>
